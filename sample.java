@@ -140,3 +140,53 @@ class Solution {
         dfs(root.right, root, lvl+1, x, y);
     }
 }
+
+
+class Solution {
+    Map<Integer, List<Integer>> m = new HashMap<Integer, List<Integer>>();
+    Queue<Integer> q = new LinkedList<Integer>();
+    int countpush=0;
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        
+        int[] dependency = new int[numCourses];
+        for (int[] prerequisite:prerequisites) {
+                dependency[prerequisite[0]] = dependency[prerequisite[0]]+1;
+                if (!m.containsKey(prerequisite[1])) {
+                    List<Integer> temp = new ArrayList<>();
+                    temp.add(prerequisite[0]);
+                    m.put(prerequisite[1], temp);
+                } else {
+                    List<Integer> temp = m.get(prerequisite[1]);
+                    temp.add(prerequisite[0]);
+                    m.put(prerequisite[1], temp);
+                }
+        }
+
+        for (int i=0;i<dependency.length;i++) {
+            if (dependency[i] == 0) {
+                q.add(i);
+                countpush++;
+            }
+        }
+
+        while (!q.isEmpty()) {
+            int val = q.poll();
+            List<Integer> courses = m.get(val);
+            if (courses == null) {
+                continue;
+            }
+            for (int e:courses) {
+                dependency[e] = dependency[e]-1;
+                if (dependency[e] == 0) {
+                    q.add(e);
+                    countpush++;
+                }
+            }
+        }
+    
+        if (countpush == dependency.length) {
+            return true;
+        }
+        return false;
+    }
+}
